@@ -34,23 +34,27 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           test "$GITHUB_REF_NAME" = "v$VERSION"
 
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version: 1.4.3
+
       - name: Install dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile
 
       - name: Test release verification
         run: node --test scripts/verify-release.test.mjs
 
       - name: Type check
-        run: npx tsc --noEmit
+        run: bun run tsc --noEmit
 
       # Build before the manifest drift gate: adapter modules import
       # @jackwener/opencli/* through package exports, which resolve to dist/.
       # A fresh release checkout has no dist/ until the full build runs.
       - name: Build package and verify cli-manifest.json is up-to-date
         run: |
-          npm run build
+          bun run build
           if ! git diff --exit-code -- cli-manifest.json; then
-            echo "::error::cli-manifest.json drift detected at release time. Run 'npm run build' locally and commit the result before tagging."
+            echo "::error::cli-manifest.json drift detected at release time. Run 'bun run build' locally and commit the result before tagging."
             exit 1
           fi
 
@@ -68,15 +72,15 @@ jobs:
           path: ${{ steps.package.outputs.tarball }}
 
       - name: Install extension dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile
         working-directory: extension
 
       - name: Build extension
-        run: npm run build
+        run: bun run build
         working-directory: extension
 
       - name: Package extension
-        run: npm run package:release -- --out ../extension-package
+        run: bun run package:release -- --out ../extension-package
         working-directory: extension
 
       - name: Create extension ZIP
@@ -125,7 +129,6 @@ jobs:
         with:
           version: '2026.10.8'
           install: false
-          cache: false
 
       - name: Verify mise installation with default trust policy
         env:

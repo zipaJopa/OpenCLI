@@ -24,10 +24,13 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
-          cache: 'npm'
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version: 1.4.3
 
       - name: Install dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile --production
 
-      - name: npm audit (production)
-        run: npm audit --omit=dev --audit-level=high
+      - name: Bun audit
+        run: bun audit --audit-level=high

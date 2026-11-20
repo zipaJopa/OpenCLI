@@ -13,11 +13,11 @@ cd opencli
 npm install
 
 # 3. Build
-npm run build
+bun run build
 
 # 4. Run a few checks
 npx tsc --noEmit
-npm test
+bun run test
 
 # 5. Link globally (optional, for testing `opencli` command)
 npm link
@@ -156,8 +156,8 @@ args: [
 See [TESTING.md](./TESTING.md) for the full guide and exact test locations.
 
 ```bash
-npm test                      # Default local gate: unit + extension + adapter tests
-npm run test:adapter          # Adapter-only project (useful while iterating on adapters)
+bun run test                      # Default local gate: unit + extension + adapter tests
+bun run test:adapter          # Adapter-only project (useful while iterating on adapters)
 npx vitest run tests/e2e/     # E2E tests
 npx vitest run                # All tests
 ```
@@ -190,8 +190,8 @@ Common scopes: site name (`twitter`, `reddit`) or module name (`browser`, `pipel
 3. Run the checks that apply:
    ```bash
    npx tsc --noEmit           # Type check
-   npm test                   # Default local gate: unit + extension + adapter
-   npm run test:adapter       # Adapter-only project (optional while iterating on adapters)
+   bun run test                   # Default local gate: unit + extension + adapter
+   bun run test:adapter       # Adapter-only project (optional while iterating on adapters)
    opencli validate           # Adapter validation
    ```
 4. Commit using conventional commit format
