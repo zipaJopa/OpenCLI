@@ -29,8 +29,11 @@ jobs:
         with:
           bun-version: 1.4.3
 
-      - name: Install dependencies
-        run: bun install --frozen-lockfile --production --ignore-scripts
-
-      - name: Bun audit
-        run: bun audit --audit-level=high
+      - name: Audit the locked production graph
+        run: |
+          audit_dir="$(mktemp -d)"
+          node -p 'JSON.stringify({...require("./package.json"), devDependencies: undefined})' > "$audit_dir/package.json"
+          cp bun.lock "$audit_dir/"
+          cd "$audit_dir"
+          bun install --lockfile-only --ignore-scripts
+          bun audit --audit-level=high
