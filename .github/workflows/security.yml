@@ -24,10 +24,16 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
-          cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version: 1.4.3
 
-      - name: npm audit (production)
-        run: npm audit --omit=dev --audit-level=high
+      - name: Audit the locked production graph
+        run: |
+          audit_dir="$(mktemp -d)"
+          node -p 'JSON.stringify({...require("./package.json"), devDependencies: undefined})' > "$audit_dir/package.json"
+          cp bun.lock "$audit_dir/"
+          cd "$audit_dir"
+          bun install --lockfile-only --ignore-scripts
+          bun audit --audit-level=high
